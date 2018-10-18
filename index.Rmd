@@ -1,7 +1,7 @@
 ---
-title: "I have the best titles"
-author: Your name here
-subtitle: Subtitle here if desired
+title: "The Template Website "
+author: Jimin Wang
+subtitle: R_503_final_project
 ---
 
 # Introduction
@@ -51,10 +51,11 @@ We are going to use the `occ()` function to download _occurrence_ records for th
 
 ```{r, warning=F} 
 ## define which species to query
-sp='Turdus migratorius'
+sp='Accipiter striatus'
 
 ## run the query and convert to data.frame()
-d = occ(query=sp, from='ebird',limit = 100) %>% occ2df()
+d = occ(query = 'Accipiter striatus', from = c('ebird','bison'), limit=100, 
+ callopts=list(verbose = TRUE)) %>% occ2df()
 ```
 This can take a few seconds.
 
