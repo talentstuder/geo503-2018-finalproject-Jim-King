@@ -12,7 +12,7 @@
 <meta name="author" content="Jimin Wang" />
 
 
-<title>The Template Website</title>
+<title>Final Project Version 1.0</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -303,73 +303,129 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">The Template Website</h1>
+<h1 class="title toc-ignore">Final Project Version 1.0</h1>
 <h3 class="subtitle"><em>R_503_final_project</em></h3>
 <h4 class="author"><em>Jimin Wang</em></h4>
 
 </div>
 
 
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
-<p>My really awesome and complete introduction will go here.</p>
+<div id="project-background" class="section level1">
+<h1>Project Background</h1>
+<p>The main topics: Using Geographic Weighted Regression to evaluate NYS Home Value</p>
 <blockquote>
-<p>I know words. I have the best words. ~ Donald Trump</p>
+<p>Key words: Home Value; GWR; MGWR; Sustainable Life Index; OLS</p>
 </blockquote>
 </div>
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
-<p>Narrative and most code will go here. Describe what you are doing and show how to do it (with code).</p>
-<p>You can do bullets like this:</p>
+<p>To be Continue …</p>
+<p>Project Composition :</p>
 <ul>
 <li>The first most important thing</li>
 <li>The second most important thing</li>
 <li>The third most important thing</li>
 </ul>
-<p>You can do numbers like this:</p>
-<ol style="list-style-type: decimal">
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ol>
-<p>See <a href="http://rmarkdown.rstudio.com/" class="uri">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
-<p>Here’s my first code chunk.</p>
-<pre class="r"><code>1+2</code></pre>
-<pre><code>## [1] 3</code></pre>
 <p>Load any required packages in a code chunk (you may need to install some packages):</p>
-<pre class="r"><code>library(dplyr)
+<pre class="r"><code>library(spgwr)
 library(ggplot2)
-library(maps)
-library(spocc)
+library(tidyverse)
+library(sp)
+library(sf)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
-<p>We are going to use the <code>occ()</code> function to download <em>occurrence</em> records for the American robin (<em>Turdus migratorius</em>) from the <a href="gbif.org">Global Biodiversity Information Facility</a>.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/Turdus-migratorius-002.jpg" alt="alt text" width="200"> <small><small><small>Licensed under CC BY-SA 3.0 via <a href="https://commons.wikimedia.org/wiki/File:Turdus-migratorius-002.jpg#/media/File:Turdus-migratorius-002.jpg">Wikimedia Commons</a></small></small></small></p>
-<pre class="r"><code>## define which species to query
-sp=&#39;Accipiter striatus&#39;
-
-## run the query and convert to data.frame()
-d = occ(query = &#39;Accipiter striatus&#39;, from = c(&#39;ebird&#39;,&#39;bison&#39;), limit=100, 
- callopts=list(verbose = TRUE)) %&gt;% occ2df()</code></pre>
-<p>This can take a few seconds.</p>
-<pre class="r"><code># Load coastline
-map=map_data(&quot;world&quot;)
-
-ggplot(d,aes(x=longitude,y=latitude))+
-  geom_polygon(aes(x=long,y=lat,group=group),data=map)+
-  geom_point(col=&quot;yellow&quot;)+
-  coord_equal()</code></pre>
-<div class="figure">
-<img src="index_files/figure-html/unnamed-chunk-4-1.png" alt="Map illustrating the known occurrence locations" width="576" />
-<p class="caption">
-Map illustrating the known occurrence locations
-</p>
+<div id="read-ny-state-.shp-basemap-from-file" class="section level2">
+<h2>Read NY state .shp basemap from file</h2>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
+<div id="read-csv-data-from-file" class="section level2">
+<h2>Read csv data from file</h2>
 </div>
-<div id="results" class="section level1">
-<h1>Results</h1>
-<p>Show tables, plots, etc. and describe them.</p>
-<pre class="r"><code>hist(d$latitude)</code></pre>
+<div id="read-median-house-price-value-data" class="section level2">
+<h2>Read median house price value data</h2>
+<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
+## character vector</code></pre>
+</div>
+<div id="visualization-median-home-value" class="section level2">
+<h2>visualization: Median Home Value</h2>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="read-unemployment-rate-data" class="section level2">
+<h2>Read unemployment rate data</h2>
+<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
+## character vector</code></pre>
+</div>
+<div id="visualization-unemployment-rate" class="section level2">
+<h2>visualization: Unemployment Rate</h2>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="read-higher-education-rate-data" class="section level2">
+<h2>Read higher education rate data</h2>
+<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
+## character vector</code></pre>
+</div>
+<div id="visualization-percent-of-residents-with-bachelor-or-above-degree" class="section level2">
+<h2>visualization: Percent of residents with bachelor or above degree</h2>
 <p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="read-average-vehicle-data" class="section level2">
+<h2>Read average vehicle data</h2>
+<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
+## character vector</code></pre>
+</div>
+<div id="visualization-vehicle-ownership-per-1000-people" class="section level2">
+<h2>visualization: vehicle ownership per 1000 people</h2>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="read-senior-population-rate-data" class="section level2">
+<h2>Read senior population rate data</h2>
+<pre class="r"><code>senior_pop_rate&lt;- read.csv(&quot;data/census_statistics/senior_population_2014.csv&quot;)
+NYS_shp_senior = left_join(NYS_shp,senior_pop_rate, by=&quot;NAME&quot; )</code></pre>
+<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
+## character vector</code></pre>
+<pre class="r"><code>senior_pop_c &lt;- senior_pop_rate$Senior.Pop</code></pre>
+</div>
+<div id="visualization-population-over-65-percent" class="section level2">
+<h2>visualization: population over 65 percent</h2>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="read-tax-rate-data" class="section level2">
+<h2>Read tax rate data</h2>
+<pre class="r"><code>tax_rate&lt;- read.csv(&quot;data/census_statistics/property_tax_rate_2014.csv&quot;)
+NYS_shp_tax = left_join(NYS_shp,tax_rate, by=&quot;NAME&quot; )</code></pre>
+<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
+## character vector</code></pre>
+<pre class="r"><code>tax_rate_c &lt;- tax_rate$Tax</code></pre>
+</div>
+<div id="visualization-property-tax-rate" class="section level2">
+<h2>visualization: property tax rate</h2>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="first-model-ols-multivariat-linear-regression" class="section level2">
+<h2>First Model: OLS – Multivariat Linear Regression</h2>
+<pre><code>## 
+## Call:
+## lm(formula = median_home_value_c ~ unemployment_rate_c + senior_pop_c + 
+##     vehicle_ave_c + higherEdu_rate_c + tax_rate_c)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -277.245  -31.519    0.534   33.410  151.434 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           330.963    159.165   2.079   0.0422 *  
+## unemployment_rate_c     5.521      6.415   0.861   0.3931    
+## senior_pop_c           -2.059      4.269  -0.482   0.6314    
+## vehicle_ave_c       -1018.227    150.689  -6.757 8.71e-09 ***
+## higherEdu_rate_c        9.028      1.362   6.630 1.41e-08 ***
+## tax_rate_c             -5.105      3.533  -1.445   0.1540    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 66.32 on 56 degrees of freedom
+## Multiple R-squared:  0.8078, Adjusted R-squared:  0.7907 
+## F-statistic: 47.08 on 5 and 56 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>

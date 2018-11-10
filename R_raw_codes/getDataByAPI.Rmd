@@ -1,0 +1,53 @@
+---
+title: "Get Data From Census"
+author: "Jimmy"
+date: "2018/10/25"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## R Markdown
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r  message = FALSE}
+library(censusapi)
+```
+
+## Slide with Plot
+## prepare for API Call
+```{r}
+censusAPI <-"df2721337b00d9c2b6778160a66c0f5936751cb4"
+## availableapis <- listCensusApis()
+## View(availableapis)
+
+##availablevars <- listCensusMetadata(name = "acs1",vintage = 2015);
+##View(availablevars)
+
+availableGeos <- listCensusMetadata(name = "acs1",vintage = 2015,type = 'geographies');
+View(availableGeos)
+```
+
+## Save Metadata into file
+```{r}
+write.csv(availablevars,file="availablevars.csv", row.names = FALSE)
+write.csv(availableapis,file="availableAPI.csv", row.names = FALSE)
+```
+
+## get census data according to given name
+```{r}
+candidat_vars <- subset(availablevars,grepl("B25083",availablevars$name,ignore.case = TRUE))
+View(candidat_vars)
+
+myResultTable_NY <- getCensus(name = "acs1", vintage = 2015, key = censusAPI, vars = c("B25083_001E"),region = "Place:*",regionin = "state:36")
+View(myResultTable_NY)
+```
