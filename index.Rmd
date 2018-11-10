@@ -19,8 +19,10 @@ Project Composition :
 * The second most important thing
 * The third most important thing
 
+<<<<<<< HEAD
 
 Load any required packages in a code chunk (you may need to install some packages):
+=======
 
 ```{r, message=F, warning=F}
 library(spgwr)
@@ -30,6 +32,8 @@ library(sp)
 library(sf)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
+
+<<<<<<< HEAD
 
 
 ## Read NY state .shp basemap from file
@@ -42,7 +46,7 @@ plot(NYS_shp$geometry)
 
 ## Read csv data from file
 ## Read median house price value data
-```{r median_house_price, echo = FALSE}
+```{r house_value, echo = FALSE}
 median_house_price <- read.csv("data/census_statistics/median_house_value_2014.csv")
 NYS_shp_house = left_join(NYS_shp,median_house_price, by="NAME" )
 median_home_value_c <- median_house_price$median.home.value /1000
@@ -68,7 +72,7 @@ ggplot() + geom_sf(aes(fill = Unemployment.rate), data = NYS_shp_UERate,color = 
 
 
 ## Read higher education rate data
-```{r higher_education,echo=FALSE}
+```{r high_edu,echo=FALSE}
 higher_education <- read.csv("data/census_statistics/high_education_rate_2014.csv")
 NYS_shp_highEdu = left_join(NYS_shp,higher_education, by="NAME" )
 higherEdu_rate_c <- higher_education$Higher.Education
@@ -81,7 +85,7 @@ ggplot() + geom_sf(aes(fill = Higher.Education), data = NYS_shp_highEdu, color =
 
 
 ## Read average vehicle data
-```{r vehicle_1000,echo=FALSE}
+```{r vehicle_ownership,echo=FALSE}
 vehicle_1000<- read.csv("data/census_statistics/vehicle_ownership_2014.csv")
 NYS_shp_vehicle = left_join(NYS_shp,vehicle_1000, by="NAME" )
 vehicle_ave_c <- (vehicle_1000$average.vehicle1000)/1000
@@ -93,26 +97,26 @@ ggplot() + geom_sf(aes(fill = average.vehicle1000), data = NYS_shp_vehicle, colo
 ```
 
 ## Read senior population rate data
-```{r senior_pop_rate}
+```{r seniorPOP}
 senior_pop_rate<- read.csv("data/census_statistics/senior_population_2014.csv")
 NYS_shp_senior = left_join(NYS_shp,senior_pop_rate, by="NAME" )
 senior_pop_c <- senior_pop_rate$Senior.Pop
 ```
 
 ## visualization: population over 65 percent
-```{r echo=FALSE}
+```{r seniorPOP_map}
 ggplot() + geom_sf(aes(fill =Senior.Pop), data = NYS_shp_senior, color = "white") + scale_fill_viridis_c(option = "plasma")
 ```
 
 ## Read tax rate data
-```{r tax_rate}
+```{r tax}
 tax_rate<- read.csv("data/census_statistics/property_tax_rate_2014.csv")
 NYS_shp_tax = left_join(NYS_shp,tax_rate, by="NAME" )
 tax_rate_c <- tax_rate$Tax
 ```
 
 ## visualization: property tax rate
-```{r echo=FALSE}
+```{r tax_map}
 ggplot() + geom_sf(aes(fill = Tax), data = NYS_shp_tax, color = "white") + scale_fill_viridis_c(option = "plasma")
 ```
 
@@ -120,9 +124,30 @@ ggplot() + geom_sf(aes(fill = Tax), data = NYS_shp_tax, color = "white") + scale
 ## First Model: OLS -- Multivariat Linear Regression
 ```{r ols-model, echo=FALSE}
 dataFrame = data.frame(median_home_value_c,unemployment_rate_c,senior_pop_c,vehicle_ave_c,higherEdu_rate_c,tax_rate_c)
-model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c)
+model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c,dataFrame)
 summary(model1)
 ```
+
+## Second Model: GWR -- Geographic Weighted Regression
+```{r gwr-model_data_prepare, echo=FALSE}
+coord = st_centroid(NYS_shp$geometry)
+coords_frame <- unlist(st_geometry(coord)) %>% 
+  matrix(ncol=2,byrow=TRUE) %>% 
+  as_tibble() %>% 
+  setNames(c("x","y"))
+
+dataFrame_gwr = data.frame(dataFrame,coords_frame)
+```
+
+## load GWR model
+```{r gwr-model}
+GWRbandwidth <- gwr.sel(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y),adapt=T) 
+gwr.model = gwr(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y), adapt=GWRbandwidth, hatmatrix=TRUE, se.fit=TRUE) 
+#print the results of the model
+gwr.model
+```
+
+
 
 # Conclusions
 

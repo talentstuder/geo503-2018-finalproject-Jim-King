@@ -97,7 +97,7 @@ ggplot() + geom_sf(aes(fill =Senior.Pop), data = NYS_shp_senior, color = "white"
 ## Read tax rate data
 ```{r csvData}
 tax_rate<- read.csv("F:/GEO/503DataScience/final_project_materials/data/property_tax_rate_2014.csv")
-NYS_shp_tax = left_join(NYS_shp,tax_rate, by="NAME" )
+## NYS_shp_tax = left_join(NYS_shp,tax_rate, by="NAME" )
 tax_rate_c <- tax_rate$Tax
 ```
 
@@ -110,18 +110,25 @@ ggplot() + geom_sf(aes(fill = Tax), data = NYS_shp_tax, color = "white") + scale
 ## First Model: OLS -- Multivariat Linear Regression
 ```{r ols-model, echo=FALSE}
 dataFrame = data.frame(median_home_value_c,unemployment_rate_c,senior_pop_c,vehicle_ave_c,higherEdu_rate_c,tax_rate_c)
-model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c)
+model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c,dataFrame)
 summary(model1)
 ```
 
 ## Second Model: GWR -- Geographic Weighted Regression
-```{r ols-model, echo=FALSE}
-dataFrame = data.frame(median_home_value_c,unemployment_rate_c,senior_pop_c,vehicle_ave_c,higherEdu_rate_c,tax_rate_c)
-model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c)
-summary(model1)
+```{r gwr-model_data_prepare, echo=FALSE}
+coord = st_centroid(NYS_shp$geometry)
+coords_frame <- unlist(st_geometry(coord)) %>% 
+  matrix(ncol=2,byrow=TRUE) %>% 
+  as_tibble() %>% 
+  setNames(c("x","y"))
+
+dataFrame_gwr = data.frame(dataFrame,coords_frame)
 ```
 
-ggplot model results
-```{r}
-
+## load GWR model
+```{r gwr-model}
+GWRbandwidth <- gwr.sel(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y),adapt=T) 
+gwr.model = gwr(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y), adapt=GWRbandwidth, hatmatrix=TRUE, se.fit=TRUE) 
+#print the results of the model
+gwr.model
 ```

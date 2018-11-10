@@ -326,13 +326,17 @@ div.tocify {
 <li>The second most important thing</li>
 <li>The third most important thing</li>
 </ul>
-<p>Load any required packages in a code chunk (you may need to install some packages):</p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+</div>
+<div id="load-any-required-packages-in-a-code-chunk-you-may-need-to-install-some-packages" class="section level1">
+<h1>Load any required packages in a code chunk (you may need to install some packages):</h1>
 <pre class="r"><code>library(spgwr)
 library(ggplot2)
 library(tidyverse)
 library(sp)
 library(sf)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 <div id="read-ny-state-.shp-basemap-from-file" class="section level2">
 <h2>Read NY state .shp basemap from file</h2>
 <p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
@@ -386,7 +390,8 @@ NYS_shp_senior = left_join(NYS_shp,senior_pop_rate, by=&quot;NAME&quot; )</code>
 </div>
 <div id="visualization-population-over-65-percent" class="section level2">
 <h2>visualization: population over 65 percent</h2>
-<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>ggplot() + geom_sf(aes(fill =Senior.Pop), data = NYS_shp_senior, color = &quot;white&quot;) + scale_fill_viridis_c(option = &quot;plasma&quot;)</code></pre>
+<p><img src="index_files/figure-html/seniorPOP_map-1.png" width="672" /></p>
 </div>
 <div id="read-tax-rate-data" class="section level2">
 <h2>Read tax rate data</h2>
@@ -398,14 +403,15 @@ NYS_shp_tax = left_join(NYS_shp,tax_rate, by=&quot;NAME&quot; )</code></pre>
 </div>
 <div id="visualization-property-tax-rate" class="section level2">
 <h2>visualization: property tax rate</h2>
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>ggplot() + geom_sf(aes(fill = Tax), data = NYS_shp_tax, color = &quot;white&quot;) + scale_fill_viridis_c(option = &quot;plasma&quot;)</code></pre>
+<p><img src="index_files/figure-html/tax_map-1.png" width="672" /></p>
 </div>
 <div id="first-model-ols-multivariat-linear-regression" class="section level2">
 <h2>First Model: OLS – Multivariat Linear Regression</h2>
 <pre><code>## 
 ## Call:
 ## lm(formula = median_home_value_c ~ unemployment_rate_c + senior_pop_c + 
-##     vehicle_ave_c + higherEdu_rate_c + tax_rate_c)
+##     vehicle_ave_c + higherEdu_rate_c + tax_rate_c, data = dataFrame)
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
@@ -425,6 +431,75 @@ NYS_shp_tax = left_join(NYS_shp,tax_rate, by=&quot;NAME&quot; )</code></pre>
 ## Residual standard error: 66.32 on 56 degrees of freedom
 ## Multiple R-squared:  0.8078, Adjusted R-squared:  0.7907 
 ## F-statistic: 47.08 on 5 and 56 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="second-model-gwr-geographic-weighted-regression" class="section level2">
+<h2>Second Model: GWR – Geographic Weighted Regression</h2>
+</div>
+<div id="load-gwr-model" class="section level2">
+<h2>load GWR model</h2>
+<pre class="r"><code>GWRbandwidth &lt;- gwr.sel(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y),adapt=T) </code></pre>
+<pre><code>## Adaptive q: 0.381966 CV score: 356507 
+## Adaptive q: 0.618034 CV score: 337433.5 
+## Adaptive q: 0.763932 CV score: 332350.5 
+## Adaptive q: 0.8357681 CV score: 330034.1 
+## Adaptive q: 0.8984991 CV score: 327378.8 
+## Adaptive q: 0.937269 CV score: 327087.1 
+## Adaptive q: 0.928851 CV score: 327250.8 
+## Adaptive q: 0.9612301 CV score: 326403.1 
+## Adaptive q: 0.9760389 CV score: 326337.9 
+## Adaptive q: 0.9721698 CV score: 326364.2 
+## Adaptive q: 0.9851912 CV score: 326158.9 
+## Adaptive q: 0.9908477 CV score: 325677 
+## Adaptive q: 0.9943435 CV score: 325410.3 
+## Adaptive q: 0.9965041 CV score: 325256 
+## Adaptive q: 0.9978394 CV score: 325164.3 
+## Adaptive q: 0.9986647 CV score: 325109.1 
+## Adaptive q: 0.9991747 CV score: 325075.5 
+## Adaptive q: 0.99949 CV score: 325054.9 
+## Adaptive q: 0.9996848 CV score: 325042.2 
+## Adaptive q: 0.9998052 CV score: 325034.4 
+## Adaptive q: 0.9998796 CV score: 325029.6 
+## Adaptive q: 0.9999256 CV score: 325026.6 
+## Adaptive q: 0.9999256 CV score: 325026.6</code></pre>
+<pre><code>## Warning in gwr.sel(median_home_value_c ~ unemployment_rate_c + senior_pop_c
+## + : Bandwidth converged to upper bound:1</code></pre>
+<pre class="r"><code>gwr.model = gwr(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y), adapt=GWRbandwidth, hatmatrix=TRUE, se.fit=TRUE) 
+#print the results of the model
+gwr.model</code></pre>
+<pre><code>## Call:
+## gwr(formula = median_home_value_c ~ unemployment_rate_c + senior_pop_c + 
+##     vehicle_ave_c + higherEdu_rate_c + tax_rate_c, data = dataFrame_gwr, 
+##     coords = cbind(dataFrame_gwr$x, dataFrame_gwr$y), adapt = GWRbandwidth, 
+##     hatmatrix = TRUE, se.fit = TRUE)
+## Kernel function: gwr.Gauss 
+## Adaptive quantile: 0.9999256 (about 61 of 62 data points)
+## Summary of GWR coefficient estimates at data points:
+##                           Min.    1st Qu.     Median    3rd Qu.       Max.
+## X.Intercept.          319.9199   340.1381   347.9961   363.2839   376.5612
+## unemployment_rate_c     4.1849     4.6386     4.9622     5.4736     6.1906
+## senior_pop_c           -3.0467    -2.7412    -2.4512    -2.2314    -1.7904
+## vehicle_ave_c       -1034.6796 -1029.2772 -1020.2018 -1013.2911 -1004.4882
+## higherEdu_rate_c        8.6786     8.7929     8.8449     8.9082     8.9922
+## tax_rate_c             -6.0666    -5.8066    -5.4663    -5.2915    -5.0377
+##                         Global
+## X.Intercept.          330.9635
+## unemployment_rate_c     5.5206
+## senior_pop_c           -2.0592
+## vehicle_ave_c       -1018.2270
+## higherEdu_rate_c        9.0282
+## tax_rate_c             -5.1052
+## Number of data points: 62 
+## Effective number of parameters (residual: 2traceS - traceS&#39;S): 7.562995 
+## Effective degrees of freedom (residual: 2traceS - traceS&#39;S): 54.43701 
+## Sigma (residual: 2traceS - traceS&#39;S): 66.35649 
+## Effective number of parameters (model: traceS): 6.82626 
+## Effective degrees of freedom (model: traceS): 55.17374 
+## Sigma (model: traceS): 65.91197 
+## Sigma (ML): 62.1777 
+## AICc (GWR p. 61, eq 2.33; p. 96, eq. 4.21): 706.3186 
+## AIC (GWR p. 96, eq. 4.22): 694.8942 
+## Residual sum of squares: 239696.1 
+## Quasi-global R2: 0.8129886</code></pre>
 </div>
 </div>
 <div id="conclusions" class="section level1">
