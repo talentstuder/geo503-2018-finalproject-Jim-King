@@ -1,0 +1,127 @@
+---
+title: "GWR Spatial Corelation in NYS Housing Price"
+Author: Jimin Wang
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+Below are codes to read all spatial data and run the GWR model
+
+## load necesssary packages
+
+```{r eval = FALSE}
+library(spgwr)
+library(ggplot2)
+library(tidyverse)
+library(sp)
+library(sf)
+```
+
+## Read NY state .shp basemap from file
+```{r echo=FALSE}
+file <- "F:/GEO/503DataScience/final_project_materials/data/map/NYS_County/Counties.shp"
+NYS_shp <- sf::read_sf(file, quiet = T,  stringsAsFactors = FALSE)
+plot(NYS_shp$geometry)
+```
+
+
+## Read csv data from file
+## Read median house price value data
+```{r csvData, echo = FALSE}
+median_house_price <- read.csv("F:/GEO/503DataScience/final_project_materials/data/median_house_value_2014.csv")
+## NYS_shp_house = left_join(NYS_shp,median_house_price, by="NAME" )
+median_home_value_c <- median_house_price$median.home.value /1000
+```
+
+## visualization: Median Home Value
+```{r echo=FALSE}
+ggplot() + geom_sf(aes(fill = median.home.value), data = NYS_shp_house,color = "white") + scale_fill_viridis_c(option = "plasma")
+```
+
+
+## Read unemployment rate data
+```{r csvData, echo=FALSE}
+unemployment <- read.csv("F:/GEO/503DataScience/final_project_materials/data/unemploymentRate_2014.csv")
+## NYS_shp_UERate = left_join(NYS_shp,unemployment, by="NAME" )
+unemployment_rate_c <- unemployment$Unemployment.rate
+```
+
+## visualization: Unemployment Rate
+```{r echo=FALSE}
+ggplot() + geom_sf(aes(fill = Unemployment.rate), data = NYS_shp_UERate,color = "white") + scale_fill_viridis_c(option = "plasma")
+```
+
+
+## Read higher education rate data
+```{r csvData,echo=FALSE}
+higher_education <- read.csv("F:/GEO/503DataScience/final_project_materials/data/high_education_rate_2014.csv")
+## NYS_shp_highEdu = left_join(NYS_shp,higher_education, by="NAME" )
+higherEdu_rate_c <- higher_education$Higher.Education
+```
+
+## visualization: Percent of residents with bachelor or above degree
+```{r,echo=FALSE}
+ggplot() + geom_sf(aes(fill = Higher.Education), data = NYS_shp_highEdu, color = "white") + scale_fill_viridis_c(option = "plasma")
+```
+
+
+## Read average vehicle data
+```{r csvData,echo=FALSE}
+vehicle_1000<- read.csv("F:/GEO/503DataScience/final_project_materials/data/vehicle_ownership_2014.csv")
+## NYS_shp_vehicle = left_join(NYS_shp,vehicle_1000, by="NAME" )
+vehicle_ave_c <- (vehicle_1000$average.vehicle1000)/1000
+```
+
+## visualization: vehicle ownership per 1000 people
+```{r,echo=FALSE}
+ggplot() + geom_sf(aes(fill = average.vehicle1000), data = NYS_shp_vehicle, color = "white") + scale_fill_viridis_c(option = "plasma")
+```
+
+## Read senior population rate data
+```{r csvData}
+senior_pop_rate<- read.csv("F:/GEO/503DataScience/final_project_materials/data/senior_population_2014.csv")
+## NYS_shp_senior = left_join(NYS_shp,senior_pop_rate, by="NAME" )
+senior_pop_c <- senior_pop_rate$Senior.Pop
+```
+
+## visualization: population over 65 percent
+```{r ols-model}
+ggplot() + geom_sf(aes(fill =Senior.Pop), data = NYS_shp_senior, color = "white") + scale_fill_viridis_c(option = "plasma")
+```
+
+## Read tax rate data
+```{r csvData}
+tax_rate<- read.csv("F:/GEO/503DataScience/final_project_materials/data/property_tax_rate_2014.csv")
+NYS_shp_tax = left_join(NYS_shp,tax_rate, by="NAME" )
+tax_rate_c <- tax_rate$Tax
+```
+
+## visualization: property tax rate
+```{r ols-model}
+ggplot() + geom_sf(aes(fill = Tax), data = NYS_shp_tax, color = "white") + scale_fill_viridis_c(option = "plasma")
+```
+
+
+## First Model: OLS -- Multivariat Linear Regression
+```{r ols-model, echo=FALSE}
+dataFrame = data.frame(median_home_value_c,unemployment_rate_c,senior_pop_c,vehicle_ave_c,higherEdu_rate_c,tax_rate_c)
+model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c)
+summary(model1)
+```
+
+## Second Model: GWR -- Geographic Weighted Regression
+```{r ols-model, echo=FALSE}
+dataFrame = data.frame(median_home_value_c,unemployment_rate_c,senior_pop_c,vehicle_ave_c,higherEdu_rate_c,tax_rate_c)
+model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c)
+summary(model1)
+```
+
+ggplot model results
+```{r}
+
+```
