@@ -1,7 +1,7 @@
 ---
 title: "Final Project Version 1.0 "
 author: Jimin Wang
-subtitle: R_503_final_project
+subtitle: R_503_final_project 
 ---
 
 # Project Background
@@ -210,7 +210,7 @@ dataFrame = data.frame(median_home_value_c,unemployment_rate_c,senior_pop_c,vehi
 model1 <- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c,dataFrame)
 summary(model1)
 ```
-
+evaluate by talentstuder
 ## Second Model: GWR -- Geographic Weighted Regression
 ```{r gwr-model_data_prepare, echo=FALSE}
 coord = st_centroid(NYS_shp$geometry)
