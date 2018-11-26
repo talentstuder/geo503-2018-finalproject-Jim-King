@@ -12,7 +12,7 @@
 <meta name="author" content="Jimin Wang" />
 
 
-<title>Final Project Version 1.0</title>
+<title>GWR models in estimating median home value based on urban sustainability framwork</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -303,8 +303,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Final Project Version 1.0</h1>
-<h3 class="subtitle"><em>R_503_final_project</em></h3>
+<h1 class="title toc-ignore">GWR models in estimating median home value based on urban sustainability framwork</h1>
+<h3 class="subtitle"><em>A case study of New York State</em></h3>
 <h4 class="author"><em>Jimin Wang</em></h4>
 
 </div>
@@ -317,105 +317,85 @@ div.tocify {
 <p>Key words: Home Value; GWR; MGWR; Sustainable Life Index; OLS</p>
 </blockquote>
 </div>
-<div id="materials-and-methods" class="section level1">
-<h1>Materials and methods</h1>
+<div id="data-source-and-data-description" class="section level1">
+<h1>Data Source and Data Description</h1>
 <p>To be Continue …</p>
-<p>Project Composition :</p>
-<ul>
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ul>
-<<<<<<< HEAD
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 </div>
-<div id="load-any-required-packages-in-a-code-chunk-you-may-need-to-install-some-packages" class="section level1">
-<h1>Load any required packages in a code chunk (you may need to install some packages):</h1>
-=======
-<<<<<<< HEAD
-=======
-<p>See <a href="http://rmarkdown.rstudio.com/" class="uri">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
->>>>>>> 14ae17942cbcad0e54c4847fbf253af84d059367
-<p>Load any required packages in a code chunk (you may need to install some packages):</p>
->>>>>>> ece9c5601ec77fcb86169fc16afb89cfe8cce1c7
+<div id="project-composition" class="section level1">
+<h1>Project Composition :</h1>
+<ul>
+<li>The first task: get town/city statistics from local csv file</li>
+<li>The second task: visualization of statistics using ggplot2 package</li>
+<li>The third task: running ols and gwr model</li>
+<li>The fourth task: gwr model visualization and analysis</li>
+</ul>
+<p>Here’s the codes:</p>
 <pre class="r"><code>library(spgwr)
 library(ggplot2)
 library(tidyverse)
 library(sp)
 library(sf)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 <div id="read-ny-state-.shp-basemap-from-file" class="section level2">
 <h2>Read NY state .shp basemap from file</h2>
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>file &lt;- &quot;F:/GEO/503DataScience/final_project_materials/data/map/NYS_County/Counties.shp&quot;
+NYS_shp &lt;- sf::read_sf(file, quiet = T,  stringsAsFactors = FALSE)</code></pre>
 </div>
-<div id="read-csv-data-from-file" class="section level2">
-<h2>Read csv data from file</h2>
+<div id="get-county-level-statistics-of-six-socio-factors-from-csv-file" class="section level2">
+<h2>Get county-level statistics of six socio-factors from csv file</h2>
+<ul>
+<li>Read median house price value data</li>
+</ul>
+<pre class="r"><code>median_house_price &lt;- read.csv(&quot;F:/GEO/503DataScience/final_project_materials/data/2014_county/median_house_value_2014.csv&quot;)
+NYS_shp_house = left_join(NYS_shp,median_house_price, by=&quot;NAME&quot; )
+median_home_value_c &lt;- median_house_price$median.home.value /1000</code></pre>
+<ul>
+<li><p>visualization: Median Home Value <img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p></li>
+<li><p>Read unemployment rate data</p></li>
+</ul>
+<pre class="r"><code>unemployment &lt;- read.csv(&quot;F:/GEO/503DataScience/final_project_materials/data/2014_county/unemploymentRate_2014.csv&quot;)
+NYS_shp_UERate = left_join(NYS_shp,unemployment, by=&quot;NAME&quot; )
+unemployment_rate_c &lt;- unemployment$Unemployment.rate</code></pre>
+<ul>
+<li><p>visualization: Unemployment Rate <img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p></li>
+<li><p>Read higher education rate data</p></li>
+</ul>
+<pre class="r"><code>higher_education &lt;- read.csv(&quot;F:/GEO/503DataScience/final_project_materials/data/2014_county/high_education_rate_2014.csv&quot;)
+NYS_shp_highEdu = left_join(NYS_shp,higher_education, by=&quot;NAME&quot; )
+higherEdu_rate_c &lt;- higher_education$Higher.Education</code></pre>
+<ul>
+<li><p>visualization: Percent of residents with bachelor or above degree <img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p></li>
+<li><p>Read average vehicle data</p></li>
+</ul>
+<pre class="r"><code>vehicle_1000&lt;- read.csv(&quot;F:/GEO/503DataScience/final_project_materials/data/2014_county/vehicle_ownership_2014.csv&quot;)
+NYS_shp_vehicle = left_join(NYS_shp,vehicle_1000, by=&quot;NAME&quot; )
+vehicle_ave_c &lt;- (vehicle_1000$average.vehicle1000)/1000</code></pre>
+<ul>
+<li><p>visualization: vehicle ownership per 1000 people <img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p></li>
+<li><p>Read senior population rate data</p></li>
+</ul>
+<pre class="r"><code>senior_pop_rate&lt;- read.csv(&quot;F:/GEO/503DataScience/final_project_materials/data/2014_county/senior_population_2014.csv&quot;)
+NYS_shp_senior = left_join(NYS_shp,senior_pop_rate, by=&quot;NAME&quot; )
+senior_pop_c &lt;- senior_pop_rate$Senior.Pop</code></pre>
+<ul>
+<li><p>visualization: population over 65 percent <img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p></li>
+<li><p>Read tax rate data</p></li>
+</ul>
+<pre class="r"><code>tax_rate&lt;- read.csv(&quot;F:/GEO/503DataScience/final_project_materials/data/2014_county/property_tax_rate_2014.csv&quot;)
+NYS_shp_tax = left_join(NYS_shp,tax_rate, by=&quot;NAME&quot; )
+tax_rate_c &lt;- tax_rate$Tax</code></pre>
+<ul>
+<li>visualization: property tax rate <img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></li>
+</ul>
 </div>
-<div id="read-median-house-price-value-data" class="section level2">
-<h2>Read median house price value data</h2>
-<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
-## character vector</code></pre>
-</div>
-<div id="visualization-median-home-value" class="section level2">
-<h2>visualization: Median Home Value</h2>
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-</div>
-<div id="read-unemployment-rate-data" class="section level2">
-<h2>Read unemployment rate data</h2>
-<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
-## character vector</code></pre>
-</div>
-<div id="visualization-unemployment-rate" class="section level2">
-<h2>visualization: Unemployment Rate</h2>
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-</div>
-<div id="read-higher-education-rate-data" class="section level2">
-<h2>Read higher education rate data</h2>
-<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
-## character vector</code></pre>
-</div>
-<div id="visualization-percent-of-residents-with-bachelor-or-above-degree" class="section level2">
-<h2>visualization: Percent of residents with bachelor or above degree</h2>
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-</div>
-<div id="read-average-vehicle-data" class="section level2">
-<h2>Read average vehicle data</h2>
-<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
-## character vector</code></pre>
-</div>
-<div id="visualization-vehicle-ownership-per-1000-people" class="section level2">
-<h2>visualization: vehicle ownership per 1000 people</h2>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-</div>
-<div id="read-senior-population-rate-data" class="section level2">
-<h2>Read senior population rate data</h2>
-<pre class="r"><code>senior_pop_rate&lt;- read.csv(&quot;data/census_statistics/senior_population_2014.csv&quot;)
-NYS_shp_senior = left_join(NYS_shp,senior_pop_rate, by=&quot;NAME&quot; )</code></pre>
-<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
-## character vector</code></pre>
-<pre class="r"><code>senior_pop_c &lt;- senior_pop_rate$Senior.Pop</code></pre>
-</div>
-<div id="visualization-population-over-65-percent" class="section level2">
-<h2>visualization: population over 65 percent</h2>
-<pre class="r"><code>ggplot() + geom_sf(aes(fill =Senior.Pop), data = NYS_shp_senior, color = &quot;white&quot;) + scale_fill_viridis_c(option = &quot;plasma&quot;)</code></pre>
-<p><img src="index_files/figure-html/seniorPOP_map-1.png" width="672" /></p>
-</div>
-<div id="read-tax-rate-data" class="section level2">
-<h2>Read tax rate data</h2>
-<pre class="r"><code>tax_rate&lt;- read.csv(&quot;data/census_statistics/property_tax_rate_2014.csv&quot;)
-NYS_shp_tax = left_join(NYS_shp,tax_rate, by=&quot;NAME&quot; )</code></pre>
-<pre><code>## Warning: Column `NAME` joining character vector and factor, coercing into
-## character vector</code></pre>
-<pre class="r"><code>tax_rate_c &lt;- tax_rate$Tax</code></pre>
-</div>
-<div id="visualization-property-tax-rate" class="section level2">
-<h2>visualization: property tax rate</h2>
-<pre class="r"><code>ggplot() + geom_sf(aes(fill = Tax), data = NYS_shp_tax, color = &quot;white&quot;) + scale_fill_viridis_c(option = &quot;plasma&quot;)</code></pre>
-<p><img src="index_files/figure-html/tax_map-1.png" width="672" /></p>
-</div>
-<div id="first-model-ols-multivariat-linear-regression" class="section level2">
-<h2>First Model: OLS – Multivariat Linear Regression</h2>
+<div id="build-regression-models-of-house-value-and-different-social-economic-factors" class="section level2">
+<h2>Build Regression Models of house value and different social-economic factors</h2>
+<ul>
+<li>First Model: OLS – Multivariat Linear Regression</li>
+</ul>
+<pre class="r"><code>dataFrame = data.frame(median_home_value_c,unemployment_rate_c,senior_pop_c,vehicle_ave_c,higherEdu_rate_c,tax_rate_c)
+model1 &lt;- lm(formula = median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c,dataFrame)
+summary(model1)</code></pre>
 <pre><code>## 
 ## Call:
 ## lm(formula = median_home_value_c ~ unemployment_rate_c + senior_pop_c + 
@@ -439,12 +419,19 @@ NYS_shp_tax = left_join(NYS_shp,tax_rate, by=&quot;NAME&quot; )</code></pre>
 ## Residual standard error: 66.32 on 56 degrees of freedom
 ## Multiple R-squared:  0.8078, Adjusted R-squared:  0.7907 
 ## F-statistic: 47.08 on 5 and 56 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
-<div id="second-model-gwr-geographic-weighted-regression" class="section level2">
-<h2>Second Model: GWR – Geographic Weighted Regression</h2>
-</div>
-<div id="load-gwr-model" class="section level2">
-<h2>load GWR model</h2>
+<ul>
+<li>Second Model: GWR – Geographic Weighted Regression</li>
+</ul>
+<pre class="r"><code>coord = st_centroid(NYS_shp$geometry)
+coords_frame &lt;- unlist(st_geometry(coord)) %&gt;% 
+  matrix(ncol=2,byrow=TRUE) %&gt;% 
+  as_tibble() %&gt;% 
+  setNames(c(&quot;x&quot;,&quot;y&quot;))
+
+dataFrame_gwr = data.frame(dataFrame,coords_frame)</code></pre>
+<ul>
+<li>load GWR model</li>
+</ul>
 <pre class="r"><code>GWRbandwidth &lt;- gwr.sel(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y),adapt=T) </code></pre>
 <pre><code>## Adaptive q: 0.381966 CV score: 356507 
 ## Adaptive q: 0.618034 CV score: 337433.5 
@@ -509,13 +496,26 @@ gwr.model</code></pre>
 ## Residual sum of squares: 239696.1 
 ## Quasi-global R2: 0.8129886</code></pre>
 </div>
+<div id="visualization-of-gwr-model" class="section level2">
+<h2>Visualization of GWR model</h2>
+<pre class="r"><code>results&lt;-as.data.frame(gwr.model$SDF)
+# head(results)
+NYS_shp_house$unemployment&lt;-results$unemployment_rate_c
+NYS_shp_house$senior_pop&lt;-results$senior_pop_c
+NYS_shp_house$vehicle_ave&lt;-results$vehicle_ave_c
+NYS_shp_house$higherEdu_rate&lt;-results$higherEdu_rate_c
+NYS_shp_house$tax_rate&lt;-results$tax_rate_c</code></pre>
+<ul>
+<li>gwr coefficent of the five socio factors</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p>coefficent of unemployment rate <img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p></li>
+<li><p>coefficent of senior_population rate <img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p></li>
+<li><p>coefficent of vehicle ownership <img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p></li>
+<li><p>coefficent of high education attainment rate <img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p></li>
+<li><p>coefficent of tax rate <img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p></li>
+</ol>
 </div>
-<div id="conclusions" class="section level1">
-<h1>Conclusions</h1>
-<p>What have you learned? Are there any broader implications?</p>
-</div>
-<div id="references" class="section level1">
-<h1>References</h1>
 </div>
 
 <!-- give the footer some space -->

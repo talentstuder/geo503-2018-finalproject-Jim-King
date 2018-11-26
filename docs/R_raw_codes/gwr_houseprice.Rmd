@@ -32,9 +32,9 @@ plot(NYS_shp$geometry)
 
 ## Read csv data from file
 ## Read median house price value data
-```{r csvData, echo = FALSE}
+```{r csvData_houseValue, echo = FALSE}
 median_house_price <- read.csv("F:/GEO/503DataScience/final_project_materials/data/median_house_value_2014.csv")
-## NYS_shp_house = left_join(NYS_shp,median_house_price, by="NAME" )
+NYS_shp_house = left_join(NYS_shp,median_house_price, by="NAME" )
 median_home_value_c <- median_house_price$median.home.value /1000
 ```
 
@@ -45,7 +45,7 @@ ggplot() + geom_sf(aes(fill = median.home.value), data = NYS_shp_house,color = "
 
 
 ## Read unemployment rate data
-```{r csvData, echo=FALSE}
+```{r csvData_unemploy, echo=FALSE}
 unemployment <- read.csv("F:/GEO/503DataScience/final_project_materials/data/unemploymentRate_2014.csv")
 ## NYS_shp_UERate = left_join(NYS_shp,unemployment, by="NAME" )
 unemployment_rate_c <- unemployment$Unemployment.rate
@@ -58,7 +58,7 @@ ggplot() + geom_sf(aes(fill = Unemployment.rate), data = NYS_shp_UERate,color = 
 
 
 ## Read higher education rate data
-```{r csvData,echo=FALSE}
+```{r csvData_edu,echo=FALSE}
 higher_education <- read.csv("F:/GEO/503DataScience/final_project_materials/data/high_education_rate_2014.csv")
 ## NYS_shp_highEdu = left_join(NYS_shp,higher_education, by="NAME" )
 higherEdu_rate_c <- higher_education$Higher.Education
@@ -71,7 +71,7 @@ ggplot() + geom_sf(aes(fill = Higher.Education), data = NYS_shp_highEdu, color =
 
 
 ## Read average vehicle data
-```{r csvData,echo=FALSE}
+```{r csvData_vehicle,echo=FALSE}
 vehicle_1000<- read.csv("F:/GEO/503DataScience/final_project_materials/data/vehicle_ownership_2014.csv")
 ## NYS_shp_vehicle = left_join(NYS_shp,vehicle_1000, by="NAME" )
 vehicle_ave_c <- (vehicle_1000$average.vehicle1000)/1000
@@ -83,26 +83,26 @@ ggplot() + geom_sf(aes(fill = average.vehicle1000), data = NYS_shp_vehicle, colo
 ```
 
 ## Read senior population rate data
-```{r csvData}
+```{r csvData_senior}
 senior_pop_rate<- read.csv("F:/GEO/503DataScience/final_project_materials/data/senior_population_2014.csv")
 ## NYS_shp_senior = left_join(NYS_shp,senior_pop_rate, by="NAME" )
 senior_pop_c <- senior_pop_rate$Senior.Pop
 ```
 
 ## visualization: population over 65 percent
-```{r ols-model}
+```{r,echo=FALSE}
 ggplot() + geom_sf(aes(fill =Senior.Pop), data = NYS_shp_senior, color = "white") + scale_fill_viridis_c(option = "plasma")
 ```
 
 ## Read tax rate data
-```{r csvData}
+```{r csvData_tax}
 tax_rate<- read.csv("F:/GEO/503DataScience/final_project_materials/data/property_tax_rate_2014.csv")
 ## NYS_shp_tax = left_join(NYS_shp,tax_rate, by="NAME" )
 tax_rate_c <- tax_rate$Tax
 ```
 
 ## visualization: property tax rate
-```{r ols-model}
+```{r,echo=FALSE}
 ggplot() + geom_sf(aes(fill = Tax), data = NYS_shp_tax, color = "white") + scale_fill_viridis_c(option = "plasma")
 ```
 
@@ -131,4 +131,47 @@ GWRbandwidth <- gwr.sel(median_home_value_c ~ unemployment_rate_c+senior_pop_c+v
 gwr.model = gwr(median_home_value_c ~ unemployment_rate_c+senior_pop_c+vehicle_ave_c+higherEdu_rate_c+tax_rate_c, data=dataFrame_gwr, coords=cbind(dataFrame_gwr$x,dataFrame_gwr$y), adapt=GWRbandwidth, hatmatrix=TRUE, se.fit=TRUE) 
 #print the results of the model
 gwr.model
+```
+
+## Visualization of GWR model
+```{r}
+results<-as.data.frame(gwr.model$SDF)
+# head(results)
+NYS_shp_house$unemployment<-results$unemployment_rate_c
+NYS_shp_house$senior_pop<-results$senior_pop_c
+NYS_shp_house$vehicle_ave<-results$vehicle_ave_c
+NYS_shp_house$higherEdu_rate<-results$higherEdu_rate_c
+NYS_shp_house$tax_rate<-results$tax_rate_c
+```
+
+
+## gwr coefficent of the five socio factors 
+## coefficent of unemployment rate
+```{r echo=FALSE}
+ggplot() + geom_sf(aes(fill = unemployment), data = NYS_shp_house, color = "white") + scale_fill_viridis_c(option = "plasma")
+
+```
+
+## coefficent of senior_population rate
+```{r echo=FALSE}
+ggplot() + geom_sf(aes(fill = senior_pop), data = NYS_shp_house, color = "white") + scale_fill_viridis_c(option = "plasma")
+
+```
+
+## coefficent of vehicle ownership
+```{r echo=FALSE}
+ggplot() + geom_sf(aes(fill = vehicle_ave), data = NYS_shp_house, color = "white") + scale_fill_viridis_c(option = "plasma")
+
+```
+
+## coefficent of high education attainment rate
+```{r echo=FALSE}
+ggplot() + geom_sf(aes(fill = higherEdu_rate), data = NYS_shp_house, color = "white") + scale_fill_viridis_c(option = "plasma")
+
+```
+
+## coefficent of tax rate
+```{r echo=FALSE}
+ggplot() + geom_sf(aes(fill = tax_rate), data = NYS_shp_house, color = "white") + scale_fill_viridis_c(option = "plasma")
+
 ```
