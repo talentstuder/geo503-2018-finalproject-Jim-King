@@ -4,6 +4,8 @@ author: Jimin Wang
 subtitle: A case study of New York State 
 ---
 
+Actually the background is easier to write than the code part, my suggestion is that it's necessary to use some words to describe why you conduct this research, the meaning of it and your expect result. Every research should have a proposal first, that's the main difference from a lab report.
+
 # Project Background
 The main topics: Using Geographic Weighted Regression to evaluate NYS Home Value  
 
@@ -272,3 +274,4 @@ ggplot() + geom_sf(aes(fill = higherEdu_rate), data = NYS_shp_house, color = "wh
 ggplot() + geom_sf(aes(fill = tax_rate), data = NYS_shp_house, color = "white") + scale_fill_viridis_c(option = "plasma")
 
 ```
+These codes are excellent, they gave very clear instruction on how to create the material map. However, it may be necessary to arrange these materials and reduce length because the procedure of creating research data is just one part of the whole research, it's better to give some explanations on the statistic results and the analysis progress.
